@@ -5,3 +5,4 @@ seaborn
 matplotlib
 kaggle
 scikit-image
+opencv-python
