@@ -106,3 +106,67 @@ class Plot:
         ax = fig.add_subplot(111, projection='3d')
         ax.scatter(x1, x2, x3, c=y)
         plt.show()
+        
+        
+class DBSCAN:
+    
+    def __init__(self, eps, min_samples):
+        self.eps = eps
+        self.min_pts = min_samples
+
+        
+    def predict(self, data):
+        self.data = data
+        self.labels = np.zeros(len(self.data), dtype=np.int64)
+        for i in range(len(self.labels)):
+            self.labels[i] = -2  # unprocessed
+
+        c_id = -1  # offset start
+        for i in range(0, len(self.data)):
+            if self.labels[i] != -2:  # unprocessed
+                continue
+
+            neighbors = self.region_query(i)
+            if len(neighbors) < self.min_pts:
+                self.labels[i] = -1  # noise
+            else: 
+                c_id += 1
+                self.expand(i, neighbors, c_id)
+
+        return self.labels
+
+
+    def expand(self, p, neighbors, c_id):
+        self.labels[p] = c_id
+        i = 0
+        while i < len(neighbors): 
+            pn = neighbors[i]
+            
+            if self.labels[pn] == -1:
+                self.labels[pn] = c_id
+            elif self.labels[pn] == -2:
+                self.labels[pn] = c_id
+                
+            new_neighbors = self.region_query(pn)
+            
+            if len(new_neighbors) >= self.min_pts:
+                neighbors = neighbors + new_neighbors
+            i += 1   
+
+    @staticmethod
+    def euclidean_distance(x1, x2):
+        """ Calculates the l2 distance between two vectors """
+        distance = 0
+        # Squared distance between each coordinate
+        for i in range(len(x1)):
+            distance += pow((x1[i] - x2[i]), 2)
+        return np.sqrt(distance)
+
+
+    def region_query(self, p):
+        # return indices of data items that are close to data[p]
+        result = []
+        for i in range(len(self.data)):
+            if self.euclidean_distance(self.data[p], self.data[i]) < self.eps:
+                result.append(i)
+        return result 
