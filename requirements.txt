@@ -6,3 +6,12 @@ matplotlib
 kaggle
 scikit-image
 opencv-python
+pyglet==1.5.1
+python-opengl
+ffmpeg
+xvfb
+pyvirtualdisplay
+gym==0.24
+pygame
+imageio 
+imageio_ffmpeg
